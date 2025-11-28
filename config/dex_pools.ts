@@ -174,8 +174,8 @@ export function findArbitragePairs(): Array<{ poolA: DexPool; poolB: DexPool }> 
       const poolA = ALL_POOLS[i];
       const poolB = ALL_POOLS[j];
 
-      // Skip if same DEX
-      if (poolA.dex === poolB.dex) continue;
+      // Skip if same DEX (check by dexName, not dex type)
+      if (poolA.dexName === poolB.dexName) continue;
 
       // Skip if not enabled
       if (!poolA.enabled || !poolB.enabled) continue;
