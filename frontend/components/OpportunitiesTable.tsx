@@ -37,6 +37,10 @@ export default function OpportunitiesTable({ opportunities, onExecute }: Opportu
       return;
     }
 
+    console.log('Executing opportunity:', oppId);
+    console.log('Current time:', Date.now());
+    console.log('Opportunity timestamp from ID:', oppId.split('_').pop());
+    
     setExecuting(oppId);
     try {
       // Request transaction from backend
@@ -163,6 +167,9 @@ export default function OpportunitiesTable({ opportunities, onExecute }: Opportu
                   </div>
                   <div className="text-xs text-slate-400 mt-1">
                     {opp.poolA.pool.dexName} → {opp.poolB.pool.dexName}
+                    <span className="ml-2 text-slate-500">
+                      (Age: {Math.floor((Date.now() - opp.timestamp) / 1000)}s)
+                    </span>
                   </div>
                 </td>
                 <td className="py-4 font-mono text-sm">{borrowAmountFormatted} {opp.tokenBorrow}</td>

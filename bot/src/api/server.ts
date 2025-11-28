@@ -143,7 +143,23 @@ app.post('/api/execute', async (req, res) => {
     const opportunity = botState.opportunities.find((opp: any) => opp.id === opportunityId);
     
     if (!opportunity) {
+      logger.warn('Opportunity not found', { opportunityId });
       return res.status(404).json({ error: 'Opportunity not found or expired' });
+    }
+    
+    // Check if opportunity is still valid (not expired)
+    if (opportunity.expiresAt < Date.now()) {
+      logger.warn('Opportunity expired', { 
+        opportunityId, 
+        expiresAt: opportunity.expiresAt, 
+        now: Date.now(),
+        ageSeconds: (Date.now() - opportunity.timestamp) / 1000
+      });
+      return res.status(410).json({ 
+        error: 'Opportunity expired',
+        message: 'This opportunity has expired. Please select a newer one.',
+        ageSeconds: Math.floor((Date.now() - opportunity.timestamp) / 1000)
+      });
     }
     
     // Build flash loan transaction
