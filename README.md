@@ -2,6 +2,18 @@
 
 A production-ready flash-loan arbitrage system built on the Stellar Soroban ecosystem. This bot detects and executes arbitrage opportunities across multiple DEXs (Soroswap, Phoenix, Stellar Orderbook) using atomic transactions.
 
+## 🎯 Live Deployment
+
+**Testnet Contracts:**
+- 🔐 Flash Loan Executor: `CCUI2DIK47OFCFG3TDI3JQQDOFUZ3ITSQK45ADHJ376MSP3WZRABYZQG`
+- 🔄 Soroswap Router: `CCMAPXWVZD4USEKDWRYS7DA4Y3D7E2SDMGBFJUCEXTC7VN6CUBGWPFUS`
+- 🏭 Soroswap Factory: `CDJTMBYKNUGINFQALHDMPLZYNGUV42GPN4B7QOYTWHRC4EE5IYJM6AES`
+- 🌐 Network: Test SDF Network ; September 2015
+
+**Frontend:** Next.js 14 + Tailwind CSS + Freighter Wallet Integration  
+**Bot Backend:** TypeScript + Express.js API  
+**Scanner:** Real-time opportunity detection (10s interval)
+
 ## 🏗️ Architecture Overview
 
 ```
@@ -148,6 +160,12 @@ soroban contract deploy \
   --network testnet \
   --source <YOUR_SECRET_KEY>
 ```
+
+**Current Deployed Contract (Testnet):**
+- Flash Loan Executor: `CCUI2DIK47OFCFG3TDI3JQQDOFUZ3ITSQK45ADHJ376MSP3WZRABYZQG`
+- Soroswap Router: `CCMAPXWVZD4USEKDWRYS7DA4Y3D7E2SDMGBFJUCEXTC7VN6CUBGWPFUS`
+- Soroswap Factory: `CDJTMBYKNUGINFQALHDMPLZYNGUV42GPN4B7QOYTWHRC4EE5IYJM6AES`
+- Network: Test SDF Network ; September 2015
 
 ### Run Scanner
 
