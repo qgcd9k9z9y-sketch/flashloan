@@ -79,25 +79,44 @@ export default function OpportunitiesTable({ opportunities, onExecute }: Opportu
       console.log('Execute result:', result);
       
       if (result.requiresSignature && result.transactionXDR) {
-        // Transaction built, now sign with Freighter
-        console.log('Transaction XDR to sign:', result.transactionXDR);
+        // MOCK MODE: Simulate transaction signing
+        console.log('🔧 MOCK MODE: Simulating transaction signing');
+        console.log('Transaction XDR received:', result.transactionXDR);
+        console.log('Opportunity details:', result.opportunity);
         
-        try {
-          // Sign transaction with Freighter
-          const signedXDR = await signTransaction(result.transactionXDR, 'Test SDF Network ; September 2015');
-          console.log('Transaction signed successfully');
-          
-          // TODO: Submit signed transaction to Stellar network
-          // const submitResponse = await fetch('/api/submit-transaction', {
-          //   method: 'POST',
-          //   body: JSON.stringify({ signedXDR })
-          // });
-          
-          alert(`✅ Transaction Signed!\n\nProfit: $${result.opportunity.profit.toFixed(2)}\nPair: ${result.opportunity.pair}\n\n⚠️ Note: ${result.note}\n\n📝 Next step: Transaction submission to network (not yet implemented)`);
-        } catch (signError) {
-          console.error('Signing failed:', signError);
-          alert(`❌ Transaction signing failed: ${(signError as Error).message}\n\nPossible reasons:\n- Freighter wallet locked\n- User rejected signature\n- Invalid transaction`);
-        }
+        // Simulate signing delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // In MOCK mode, we simulate a successful signature
+        const mockSignedXDR = result.transactionXDR + '_SIGNED_MOCK';
+        console.log('✅ Mock signature completed');
+        
+        alert(
+          `✅ Arbitrage Execution Simulated!\n\n` +
+          `💰 Expected Profit: $${result.opportunity.profit.toFixed(2)}\n` +
+          `🔄 Route: ${result.opportunity.pair}\n` +
+          `📊 Amount: ${result.opportunity.amount}\n\n` +
+          `📝 Mock Mode Active:\n` +
+          `- Transaction built successfully\n` +
+          `- Signature simulated (no real blockchain interaction)\n` +
+          `- Wallet not charged\n\n` +
+          `⚠️ To enable real execution:\n` +
+          `1. Deploy real DEX contracts\n` +
+          `2. Build actual transaction XDR\n` +
+          `3. Enable Freighter signing\n` +
+          `4. Submit to Stellar network`
+        );
+        
+        // TODO: For production with real contracts:
+        // try {
+        //   const signedXDR = await signTransaction(result.transactionXDR, 'Test SDF Network ; September 2015');
+        //   const submitResponse = await fetch('/api/submit-transaction', {
+        //     method: 'POST',
+        //     body: JSON.stringify({ signedXDR })
+        //   });
+        // } catch (error) {
+        //   alert('Transaction signing/submission failed');
+        // }
         
         onExecute();
       } else if (result.success) {
