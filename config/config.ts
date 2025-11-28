@@ -24,6 +24,18 @@ export const config = {
     isTestnet: process.env.IS_TESTNET !== 'false',
   },
 
+  // Base Chain Configuration
+  base: {
+    // Base RPC endpoint
+    rpcUrl: process.env.BASE_RPC_URL || 'https://mainnet.base.org',
+    
+    // Chain ID
+    chainId: parseInt(process.env.BASE_CHAIN_ID || '8453'),
+    
+    // Enable Base scanning
+    enabled: process.env.BASE_ENABLED !== 'false',
+  },
+
   // Contract Addresses
   contracts: {
     // Flash Loan Executor contract

@@ -9,9 +9,15 @@ import { metrics } from '../utils/metrics';
 import { soroswapScanner, PoolPrice } from './soroswap';
 import { aquariusScanner } from './aquarius';
 import { stellarDexScanner } from './stellar_dex';
+import { baseScanner } from './base';
 import { getToken } from '../config/tokens';
 import { findArbitragePairs, DexPool } from '../config/dex_pools';
 import config from '../config/config';
+
+logger.info('Multi-chain scanner initialized', {
+  stellar: true,
+  base: config.base?.enabled || false,
+});
 
 export interface ArbitrageOpportunity {
   id: string;

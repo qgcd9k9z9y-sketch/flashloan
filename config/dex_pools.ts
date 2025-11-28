@@ -7,6 +7,7 @@
 export enum DexType {
   Soroswap = 0,
   Aquarius = 1,
+  Base = 2, // Base chain DEXs (Aerodrome, BaseSwap)
 }
 
 export interface DexPool {
