@@ -5,11 +5,11 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "scanner": "ts-node scripts/runScanner.ts",
-    "execute": "ts-node scripts/executeFlashLoan.ts",
-    "simulate": "ts-node scripts/simulateArb.ts",
+    "start": "node -r dotenv/config dist/index.js",
+    "dev": "ts-node -r dotenv/config src/index.ts",
+    "scanner": "ts-node -r dotenv/config scripts/runScanner.ts",
+    "execute": "ts-node -r dotenv/config scripts/executeFlashLoan.ts",
+    "simulate": "ts-node -r dotenv/config scripts/simulateArb.ts",
     "test": "jest",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\""

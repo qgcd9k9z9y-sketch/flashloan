@@ -8,6 +8,8 @@ import { logger } from '../utils/logger';
 import { DexPool } from '../config/dex_pools';
 import { Token } from '../config/tokens';
 import { PoolPrice } from './soroswap';
+import { getStellarClient } from '../utils/stellar_client';
+import { Contract, scValToNative, TransactionBuilder } from '@stellar/stellar-sdk';
 
 export class AquariusScanner {
   /**
@@ -20,37 +22,56 @@ export class AquariusScanner {
         pair: `${tokenA.symbol}/${tokenB.symbol}`,
       });
 
-      // TODO: Implement actual Aquarius pool contract calls
-      // Aquarius uses constant product (x*y=k) and stableswap AMM formulas
-      // 
-      // PSEUDOCODE:
-      // const contract = new Contract(pool.poolAddress);
-      // const reserves = await contract.call('get_reserves');
-      // const poolInfo = await contract.call('get_pool_info');
-      // Similar to Soroswap implementation
-
-      // MOCK DATA for development - with variation based on pool and token
-      const poolHash = pool.poolAddress.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const tokenHash = (tokenA.symbol + tokenB.symbol).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const variation = 0.75 + ((poolHash + tokenHash) % 50) / 100; // 0.75 to 1.25
+      // Real Aquarius pool contract calls via RPC
+      const client = getStellarClient();
+      const contract = new Contract(pool.poolAddress);
       
-      const mockReserveA = BigInt(Math.floor(8000000 * variation * Math.pow(10, tokenA.decimals)));
-      const mockReserveB = BigInt(Math.floor(6000000 * (2 - variation) * Math.pow(10, tokenB.decimals)));
-
-      const priceAtoB = Number(mockReserveB) / Number(mockReserveA);
-      const priceBtoA = Number(mockReserveA) / Number(mockReserveB);
-
-      return {
-        pool,
-        tokenA,
-        tokenB,
-        priceAtoB,
-        priceBtoA,
-        reserveA: mockReserveA,
-        reserveB: mockReserveB,
-        liquidityUsd: Math.floor(120000 * variation), // Mock liquidity
-        timestamp: Date.now(),
-      };
+      // Get account for building transaction
+      const account = await client.server.getAccount(client.getPublicKey());
+      
+      // Build transaction to call get_reserves
+      const transaction = new TransactionBuilder(account, {
+        fee: '100',
+        networkPassphrase: client['network'],
+      })
+        .addOperation(contract.call('get_reserves'))
+        .setTimeout(30)
+        .build();
+      
+      // Simulate the transaction
+      const result = await client.server.simulateTransaction(transaction);
+      
+      if ('result' in result && result.result) {
+        const reserves = scValToNative(result.result.retval);
+        const reserveA = BigInt(reserves[0]);
+        const reserveB = BigInt(reserves[1]);
+        
+        const priceAtoB = Number(reserveB) / Number(reserveA);
+        const priceBtoA = Number(reserveA) / Number(reserveB);
+        
+        // Estimate liquidity in USD (simplified - using tokenB as USD proxy if it's USDC/USDT)
+        const liquidityUsd = ['USDC', 'USDT'].includes(tokenB.symbol)
+          ? Number(reserveB) / Math.pow(10, tokenB.decimals)
+          : Number(reserveA) / Math.pow(10, tokenA.decimals);
+        
+        return {
+          pool,
+          tokenA,
+          tokenB,
+          priceAtoB,
+          priceBtoA,
+          reserveA,
+          reserveB,
+          liquidityUsd,
+          timestamp: Date.now(),
+        };
+      }
+      
+      logger.error('Failed to simulate Aquarius get_reserves', {
+        pool: pool.poolAddress,
+        result,
+      });
+      return null;
     } catch (error) {
       logger.error('Failed to fetch Aquarius pool price', {
         pool: pool.poolAddress,
