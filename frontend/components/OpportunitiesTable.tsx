@@ -79,12 +79,25 @@ export default function OpportunitiesTable({ opportunities, onExecute }: Opportu
       console.log('Execute result:', result);
       
       if (result.requiresSignature && result.transactionXDR) {
-        // Transaction needs to be signed
-        alert(`Transaction built!\n\nProfit: $${result.opportunity.profit.toFixed(2)}\nPair: ${result.opportunity.pair}\n\nNote: ${result.note}\n\nIn production, this would open Freighter to sign the transaction.`);
+        // Transaction built, now sign with Freighter
+        console.log('Transaction XDR to sign:', result.transactionXDR);
         
-        // In production, uncomment this to sign with Freighter:
-        // const signedXDR = await signTransaction(result.transactionXDR, 'Test SDF Network ; September 2015');
-        // Then submit signedXDR to network
+        try {
+          // Sign transaction with Freighter
+          const signedXDR = await signTransaction(result.transactionXDR, 'Test SDF Network ; September 2015');
+          console.log('Transaction signed successfully');
+          
+          // TODO: Submit signed transaction to Stellar network
+          // const submitResponse = await fetch('/api/submit-transaction', {
+          //   method: 'POST',
+          //   body: JSON.stringify({ signedXDR })
+          // });
+          
+          alert(`✅ Transaction Signed!\n\nProfit: $${result.opportunity.profit.toFixed(2)}\nPair: ${result.opportunity.pair}\n\n⚠️ Note: ${result.note}\n\n📝 Next step: Transaction submission to network (not yet implemented)`);
+        } catch (signError) {
+          console.error('Signing failed:', signError);
+          alert(`❌ Transaction signing failed: ${(signError as Error).message}\n\nPossible reasons:\n- Freighter wallet locked\n- User rejected signature\n- Invalid transaction`);
+        }
         
         onExecute();
       } else if (result.success) {
