@@ -30,6 +30,22 @@ export default function OpportunitiesTable({ opportunities, onExecute }: Opportu
   const [executing, setExecuting] = useState<string | null>(null);
   const { publicKey, isConnected, signTransaction } = useWallet();
 
+  const getChainBadge = (dexName: string) => {
+    const chainMap: Record<string, string> = {
+      'Soroswap': '⭐ Stellar',
+      'Aquarius': '⭐ Stellar',
+      'Aerodrome': '🔵 Base',
+      'BaseSwap': '🔵 Base',
+      'Raydium': '🟣 Solana',
+      'Orca': '🟣 Solana',
+      'Cetus': '🌊 Sui',
+      'Turbos': '🌊 Sui',
+      'PancakeSwap': '🔴 Aptos',
+      'Liquidswap': '🔴 Aptos',
+    };
+    return chainMap[dexName] || '🌐 Unknown';
+  };
+
   const handleExecute = async (oppId: string) => {
     // Check wallet connection
     if (!isConnected || !publicKey) {
@@ -161,7 +177,7 @@ export default function OpportunitiesTable({ opportunities, onExecute }: Opportu
       <table className="w-full">
         <thead className="border-b border-slate-700">
           <tr className="text-left text-sm text-slate-400">
-            <th className="pb-3 font-semibold">Route</th>
+            <th className="pb-3 font-semibold">Chain & Route</th>
             <th className="pb-3 font-semibold">Amount</th>
             <th className="pb-3 font-semibold">Profit (BPS)</th>
             <th className="pb-3 font-semibold">Est. Profit</th>
@@ -197,9 +213,12 @@ export default function OpportunitiesTable({ opportunities, onExecute }: Opportu
                       {opp.tokenBorrow}
                     </span>
                   </div>
-                  <div className="text-xs text-slate-400 mt-1">
-                    {opp.poolA.pool.dexName} → {opp.poolB.pool.dexName}
-                    <span className="ml-2 text-slate-500">
+                  <div className="text-xs text-slate-400 mt-1 flex items-center gap-2">
+                    <span className="text-primary-400 font-semibold">
+                      {getChainBadge(opp.poolA.pool.dexName)}
+                    </span>
+                    <span>{opp.poolA.pool.dexName} → {opp.poolB.pool.dexName}</span>
+                    <span className="text-slate-500">
                       (Age: {Math.floor((Date.now() - opp.timestamp) / 1000)}s)
                     </span>
                   </div>

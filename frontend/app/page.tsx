@@ -8,6 +8,7 @@ import OpportunitiesTable from '@/components/OpportunitiesTable';
 import ProfitChart from '@/components/ProfitChart';
 import BotControls from '@/components/BotControls';
 import WalletConnect from '@/components/WalletConnect';
+import ChainStats from '@/components/ChainStats';
 
 export default function Home() {
   const [botStatus, setBotStatus] = useState<any>(null);
@@ -69,7 +70,9 @@ export default function Home() {
               <Zap className="w-8 h-8 text-primary-400" />
               <div>
                 <h1 className="text-2xl font-bold">Flash Loan Arbitrage Bot</h1>
-                <p className="text-sm text-slate-400">Stellar Soroban Ecosystem</p>
+                <p className="text-sm text-slate-400">
+                  🌐 Multi-Chain: ⭐ Stellar • 🔵 Base • 🟣 Solana • 🌊 Sui • 🔴 Aptos
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -86,6 +89,9 @@ export default function Home() {
           <BotStatusCard status={botStatus} />
           <MetricsOverview metrics={metrics} />
         </div>
+
+        {/* Multi-Chain Stats */}
+        <ChainStats opportunities={opportunities} />
 
         {/* Profit Chart */}
         <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700 p-6">
