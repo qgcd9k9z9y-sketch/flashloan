@@ -76,8 +76,8 @@ export const config = {
     // Number of opportunities to keep in memory
     maxOpportunities: parseInt(process.env.MAX_OPPORTUNITIES || '100'),
     
-    // Expiry time for opportunities in seconds
-    opportunityTtlSeconds: parseInt(process.env.OPPORTUNITY_TTL_SECONDS || '30'),
+    // Expiry time for opportunities in seconds (5 minutes for testing)
+    opportunityTtlSeconds: parseInt(process.env.OPPORTUNITY_TTL_SECONDS || '300'),
     
     // Enable parallel scanning across DEXs
     enableParallelScan: process.env.ENABLE_PARALLEL_SCAN !== 'false',

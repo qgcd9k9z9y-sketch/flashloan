@@ -49,7 +49,30 @@ export default function OpportunitiesTable({ opportunities, onExecute }: Opportu
         }),
       });
       
+      console.log('Execute response status:', response.status);
+      console.log('Execute response ok:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Execute error response:', errorText);
+        
+        // Parse error message
+        let errorMsg = errorText;
+        try {
+          const errorJson = JSON.parse(errorText);
+          if (errorJson.error === 'Opportunity not found or expired') {
+            errorMsg = '⏰ This opportunity has expired. Please refresh the page to see new opportunities.';
+          } else {
+            errorMsg = errorJson.error || errorText;
+          }
+        } catch {}
+        
+        alert(`Error: ${errorMsg}`);
+        return;
+      }
+      
       const result = await response.json();
+      console.log('Execute result:', result);
       
       if (result.requiresSignature && result.transactionXDR) {
         // Transaction needs to be signed
