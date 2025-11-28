@@ -20,45 +20,30 @@ export interface DexPool {
 }
 
 /**
- * Soroswap Pools
+ * Soroswap Pools (Testnet - Real Addresses)
+ * Note: Only XLM/USDC pool is currently deployed on testnet
+ * Source: Soroswap Factory CDJTMBYKNUGINFQALHDMPLZYNGUV42GPN4B7QOYTWHRC4EE5IYJM6AES
  */
 export const SOROSWAP_POOLS: DexPool[] = [
   {
     dex: DexType.Soroswap,
     dexName: 'Soroswap',
-    poolAddress: 'CSOROSWAP1XLMUSDCPOOLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    poolAddress: 'CDE3I665APUHQYMATNLEODUPIWTEWXB5NB5IEV6NNNDQ3ZYRJ3SSWZKM', // Real XLM/USDC pool
     tokenA: 'XLM',
     tokenB: 'USDC',
     feeRate: 30, // 0.3%
     enabled: true,
   },
-  {
-    dex: DexType.Soroswap,
-    dexName: 'Soroswap',
-    poolAddress: 'CSOROSWAP2XLMAQUAPOOLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    tokenA: 'XLM',
-    tokenB: 'AQUA',
-    feeRate: 30,
-    enabled: true,
-  },
-  {
-    dex: DexType.Soroswap,
-    dexName: 'Soroswap',
-    poolAddress: 'CSOROSWAP3USDCAQUAPOOLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    tokenA: 'USDC',
-    tokenB: 'AQUA',
-    feeRate: 30,
-    enabled: true,
-  },
-  {
-    dex: DexType.Soroswap,
-    dexName: 'Soroswap',
-    poolAddress: 'CSOROSWAP4XLMYXLMPOOLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    tokenA: 'XLM',
-    tokenB: 'YXLM',
-    feeRate: 30,
-    enabled: true,
-  },
+  // Other pools not yet deployed on Soroswap testnet
+  // {
+  //   dex: DexType.Soroswap,
+  //   dexName: 'Soroswap',
+  //   poolAddress: 'CSOROSWAP2XLMAQUAPOOLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  //   tokenA: 'XLM',
+  //   tokenB: 'AQUA',
+  //   feeRate: 30,
+  //   enabled: false,
+  // },
 ];
 
 /**
