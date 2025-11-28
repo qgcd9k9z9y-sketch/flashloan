@@ -7,6 +7,8 @@
 import { logger } from '../utils/logger';
 import { ArbitrageOpportunity } from '../scanner';
 import config from '../config/config';
+import { getStellarClient } from '../utils/stellar_client';
+import { Contract, TransactionBuilder as StellarTxBuilder, Operation, nativeToScVal, Address } from '@stellar/stellar-sdk';
 
 export interface FlashLoanTransaction {
   opportunity: ArbitrageOpportunity;
@@ -15,6 +17,7 @@ export interface FlashLoanTransaction {
   args: any[];
   estimatedGas: number;
   builtAt: number;
+  xdr?: string; // Built transaction XDR for signing
 }
 
 export class TransactionBuilder {
@@ -22,7 +25,8 @@ export class TransactionBuilder {
    * Build a flash loan arbitrage transaction
    */
   async buildFlashLoanTransaction(
-    opp: ArbitrageOpportunity
+    opp: ArbitrageOpportunity,
+    userPublicKey?: string
   ): Promise<FlashLoanTransaction> {
     try {
       logger.info('Building flash loan transaction', {
@@ -30,36 +34,51 @@ export class TransactionBuilder {
         pair: `${opp.tokenBorrow}/${opp.tokenIntermediate}`,
       });
 
+      const client = getStellarClient();
       const contractId = config.contracts.flashLoanExecutor;
+      const contract = new Contract(contractId);
 
-      // Determine pool address to borrow from
-      // In practice, you'd query available pools
-      const poolAddress = opp.poolA.pool.poolAddress;
+      // Get source account (user or bot)
+      const sourceKey = userPublicKey || client.getPublicKey();
+      const sourceAccount = await client.server.getAccount(sourceKey);
 
-      // Build arguments for the contract call
-      const args = [
-        poolAddress, // pool_address
-        opp.poolA.tokenA.address, // token_borrow
-        opp.poolA.tokenB.address, // token_intermediate
-        opp.borrowAmount.toString(), // amount
-        opp.poolA.pool.dex, // dex_a_type (0 = Soroswap, 1 = Aquarius)
-        opp.poolA.pool.poolAddress, // dex_a_pool
-        opp.poolB.pool.dex, // dex_b_type
-        opp.poolB.pool.poolAddress, // dex_b_pool
-        config.trading.minProfitBps, // min_profit_bps
-        config.trading.maxSlippageBps, // max_slippage_bps
+      // Build contract arguments
+      const contractArgs = [
+        new Address(opp.poolA.tokenA.address).toScVal(), // token_borrow
+        new Address(opp.poolA.tokenB.address).toScVal(), // token_intermediate  
+        nativeToScVal(opp.borrowAmount, { type: 'u128' }), // amount
+        nativeToScVal(opp.poolA.pool.dex, { type: 'u32' }), // dex_a_type
+        new Address(opp.poolA.pool.poolAddress).toScVal(), // dex_a_pool
+        nativeToScVal(opp.poolB.pool.dex, { type: 'u32' }), // dex_b_type
+        new Address(opp.poolB.pool.poolAddress).toScVal(), // dex_b_pool
+        nativeToScVal(config.trading.minProfitBps, { type: 'u32' }), // min_profit_bps
       ];
 
+      // Build transaction
+      const txBuilder = new StellarTxBuilder(sourceAccount, {
+        fee: '10000', // 0.001 XLM
+        networkPassphrase: client['network'],
+      });
+
+      const tx = txBuilder
+        .addOperation(contract.call('execute_flash_loan_arbitrage', ...contractArgs))
+        .setTimeout(30)
+        .build();
+
+      // Get XDR for signing
+      const xdr = tx.toXDR();
+
       // Estimate gas
-      const estimatedGas = await this.estimateGas(contractId, 'execute_flash_loan_arbitrage', args);
+      const estimatedGas = 10000;
 
       return {
         opportunity: opp,
         contractId,
         method: 'execute_flash_loan_arbitrage',
-        args,
+        args: contractArgs,
         estimatedGas,
         builtAt: Date.now(),
+        xdr,
       };
     } catch (error) {
       logger.error('Failed to build transaction', { error });

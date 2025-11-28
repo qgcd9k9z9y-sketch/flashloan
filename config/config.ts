@@ -48,7 +48,7 @@ export const config = {
   // Trading Parameters
   trading: {
     // Minimum profit threshold in basis points (50 bps = 0.5%)
-    minProfitBps: parseInt(process.env.MIN_PROFIT_BPS || '1'), // Lowered to show more opportunities
+    minProfitBps: parseInt(process.env.MIN_PROFIT_BPS || '0'), // Show all opportunities
     
     // Maximum slippage tolerance in basis points (100 bps = 1%)
     maxSlippageBps: parseInt(process.env.MAX_SLIPPAGE_BPS || '100'),

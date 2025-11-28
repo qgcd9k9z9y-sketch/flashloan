@@ -174,27 +174,29 @@ app.post('/api/execute', async (req, res) => {
     }
     
     // Build flash loan transaction
-    // TODO: Implement actual flash loan execution with flashLoanEngine
-    // This would involve:
-    // 1. Build transaction XDR with flash loan contract call
-    // 2. Return XDR to frontend for user signature
-    // 3. Frontend signs with Freighter
-    // 4. Submit signed transaction to network
+    const { TransactionBuilder } = await import('../engine/transaction_builder');
+    const txBuilder = new TransactionBuilder();
+    const transaction = await txBuilder.buildFlashLoanTransaction(opportunity, userPublicKey);
     
-    // For now, return transaction details that need to be signed
-    const mockTransactionXDR = "AAAAAgAAAABbtxiNXIRW8"; // Mock XDR
+    logger.info('Transaction built successfully', {
+      xdrLength: transaction.xdr?.length,
+      estimatedGas: transaction.estimatedGas,
+    });
     
     const response = {
       success: false,
       requiresSignature: true,
-      message: 'Transaction built. Please sign with your wallet.',
-      transactionXDR: mockTransactionXDR,
+      message: 'Transaction built. Please sign with your Freighter wallet.',
+      transactionXDR: transaction.xdr,
       opportunity: {
+        id: opportunity.id,
         pair: `${opportunity.tokenBorrow}/${opportunity.tokenIntermediate}`,
         profit: opportunity.expectedProfitUsd,
-        amount: opportunity.borrowAmount,
+        profitPercentage: opportunity.profitPercentage,
+        borrowAmount: opportunity.borrowAmount.toString(),
       },
-      note: 'Flash loan execution requires real DEX contracts. Current implementation uses mock data.',
+      estimatedGas: transaction.estimatedGas,
+      contractId: transaction.contractId,
     };
     
     res.json(serializeBigInt(response));
