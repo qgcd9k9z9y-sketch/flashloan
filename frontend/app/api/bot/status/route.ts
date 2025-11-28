@@ -7,6 +7,7 @@ export async function GET() {
     const response = await fetch(`${BOT_API_URL}/api/status`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
     });
     
     if (!response.ok) {
