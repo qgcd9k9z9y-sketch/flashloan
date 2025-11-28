@@ -102,7 +102,11 @@ app.post('/api/stop', (req, res) => {
 
 // GET /api/opportunities - Get current opportunities
 app.get('/api/opportunities', (req, res) => {
-  const serialized = serializeBigInt(botState.opportunities || []);
+  // Filter out expired opportunities before sending
+  const now = Date.now();
+  const activeOpportunities = (botState.opportunities || []).filter((opp: any) => opp.expiresAt > now);
+  
+  const serialized = serializeBigInt(activeOpportunities);
   res.json(serialized);
 });
 
@@ -195,8 +199,20 @@ app.post('/api/execute', async (req, res) => {
 
 // Update opportunities periodically
 export function updateOpportunities(opportunities: any[]) {
-  botState.opportunities = opportunities;
+  // Filter out expired opportunities
+  const now = Date.now();
+  botState.opportunities = opportunities.filter((opp: any) => opp.expiresAt > now);
   botState.lastScanTime = new Date();
+  
+  // Log if any were filtered
+  const expiredCount = opportunities.length - botState.opportunities.length;
+  if (expiredCount > 0) {
+    logger.debug('Filtered expired opportunities on update', { 
+      total: opportunities.length, 
+      expired: expiredCount,
+      active: botState.opportunities.length 
+    });
+  }
 }
 
 // Set bot running state
