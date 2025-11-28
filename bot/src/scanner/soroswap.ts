@@ -7,6 +7,8 @@
 import { logger } from '../utils/logger';
 import { DexPool } from '../config/dex_pools';
 import { Token } from '../config/tokens';
+import { getStellarClient } from '../utils/stellar_client';
+import { Contract, scValToNative, TransactionBuilder } from '@stellar/stellar-sdk';
 
 export interface PoolPrice {
   pool: DexPool;
@@ -31,43 +33,67 @@ export class SoroswapScanner {
         pair: `${tokenA.symbol}/${tokenB.symbol}`,
       });
 
-      // TODO: Implement actual Soroswap pool contract calls
-      // This would involve:
-      // 1. Call get_reserves() on the pool contract
-      // 2. Calculate price from reserves
-      // 3. Fetch USD prices for liquidity calculation
-
-      // PSEUDOCODE:
-      // const contract = new Contract(pool.poolAddress);
-      // const reserves = await contract.call('get_reserves');
-      // const [reserveA, reserveB] = reserves;
-      // 
-      // const priceAtoB = Number(reserveB) / Number(reserveA);
-      // const priceBtoA = Number(reserveA) / Number(reserveB);
-      //
-      // const liquidityUsd = calculateLiquidityUsd(reserveA, reserveB, tokenA, tokenB);
-
-      // MOCK DATA for development - with variation based on pool address
-      const poolHash = pool.poolAddress.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const variation = 0.8 + (poolHash % 40) / 100; // 0.8 to 1.2
+      // Real Soroswap pool contract calls
+      const client = getStellarClient();
+      const contract = new Contract(pool.poolAddress);
       
-      const mockReserveA = BigInt(Math.floor(10000000 * variation * Math.pow(10, tokenA.decimals)));
-      const mockReserveB = BigInt(Math.floor(5000000 * (2 - variation) * Math.pow(10, tokenB.decimals)));
-
-      const priceAtoB = Number(mockReserveB) / Number(mockReserveA);
-      const priceBtoA = Number(mockReserveA) / Number(mockReserveB);
-
-      return {
-        pool,
-        tokenA,
-        tokenB,
-        priceAtoB,
-        priceBtoA,
-        reserveA: mockReserveA,
-        reserveB: mockReserveB,
-        liquidityUsd: Math.floor(100000 * variation), // Mock liquidity
-        timestamp: Date.now(),
-      };
+      try {
+        // Call get_reserves() on the pool contract via RPC simulation
+        const account = await client.server.getAccount(client.getPublicKey());
+        const transaction = new TransactionBuilder(account, {
+          fee: '100',
+          networkPassphrase: 'Test SDF Network ; September 2015',
+        })
+        .addOperation(contract.call('get_reserves'))
+        .setTimeout(30)
+        .build();
+        
+        const result = await client.server.simulateTransaction(transaction);
+        
+        if ('result' in result && result.result) {
+          const reserves = scValToNative(result.result.retval);
+          
+          // reserves is array [reserveA, reserveB]
+          const reserveA = BigInt(reserves[0]);
+          const reserveB = BigInt(reserves[1]);
+          
+          logger.debug('Got real reserves from Soroswap', {
+            pool: pool.poolAddress.substring(0, 8) + '...',
+            reserveA: reserveA.toString(),
+            reserveB: reserveB.toString(),
+          });
+          
+          // Calculate prices
+          const priceAtoB = Number(reserveB) / Number(reserveA);
+          const priceBtoA = Number(reserveA) / Number(reserveB);
+          
+          // Estimate liquidity in USD (simplified - using USDC as $1)
+          const liquidityUsd = tokenB.symbol === 'USDC' 
+            ? Number(reserveB) / Math.pow(10, tokenB.decimals)
+            : Number(reserveA) / Math.pow(10, tokenA.decimals) * 0.10; // Rough XLM price
+          
+          return {
+            pool,
+            tokenA,
+            tokenB,
+            priceAtoB,
+            priceBtoA,
+            reserveA,
+            reserveB,
+            liquidityUsd,
+            timestamp: Date.now(),
+          };
+        } else {
+          logger.warn('No results from get_reserves simulation', { pool: pool.poolAddress });
+          return null;
+        }
+      } catch (rpcError) {
+        logger.error('RPC call failed for Soroswap pool', {
+          pool: pool.poolAddress,
+          error: rpcError,
+        });
+        return null;
+      }
     } catch (error) {
       logger.error('Failed to fetch Soroswap pool price', {
         pool: pool.poolAddress,

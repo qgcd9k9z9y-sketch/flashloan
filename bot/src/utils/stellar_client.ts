@@ -53,6 +53,32 @@ export class StellarClient {
   }
 
   /**
+   * Build a transaction for simulation (without signing)
+   */
+  buildTransaction(operations: any[]): any {
+    // For now, create a simple transaction builder
+    // This will be used for simulation/read-only calls
+    return new TransactionBuilder(
+      {
+        accountId: () => this.keypair.publicKey(),
+        sequenceNumber: () => '0',
+        incrementSequenceNumber: () => {},
+      } as any,
+      {
+        fee: '100',
+        networkPassphrase: this.network,
+      }
+    ).setTimeout(30);
+  }
+
+  /**
+   * Get RPC server instance
+   */
+  get server(): SorobanRpc.Server {
+    return this.rpcServer;
+  }
+
+  /**
    * Build and submit a transaction
    */
   async buildAndSubmitTransaction(
@@ -211,5 +237,10 @@ export class StellarClient {
 
 // Singleton instance
 export const stellarClient = new StellarClient();
+
+// Helper function to get client instance
+export function getStellarClient(): StellarClient {
+  return stellarClient;
+}
 
 export default stellarClient;

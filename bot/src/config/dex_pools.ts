@@ -26,7 +26,7 @@ export const SOROSWAP_POOLS: DexPool[] = [
   {
     dex: DexType.Soroswap,
     dexName: 'Soroswap',
-    poolAddress: 'CSOROSWAP1XLMUSDCPOOLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    poolAddress: 'CDE3I665APUHQYMATNLEODUPIWTEWXB5NB5IEV6NNNDQ3ZYRJ3SSWZKM', // Real XLM/USDC pool
     tokenA: 'XLM',
     tokenB: 'USDC',
     feeRate: 30, // 0.3%
