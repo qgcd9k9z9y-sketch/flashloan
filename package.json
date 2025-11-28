@@ -1,0 +1,35 @@
+{
+  "name": "flashloan-arbitrage",
+  "version": "1.0.0",
+  "description": "Flash loan arbitrage bot for Stellar Soroban",
+  "private": true,
+  "scripts": {
+    "quickstart": "./quickstart.sh",
+    "deploy": "./scripts/deploy_contract.sh",
+    "build:contract": "./scripts/build_contract.sh",
+    "test:contract": "./scripts/test_contract.sh",
+    "bot:install": "cd bot && npm install",
+    "bot:start": "cd bot && npm start",
+    "bot:dev": "cd bot && npm run dev",
+    "bot:build": "cd bot && npm run build",
+    "frontend:install": "cd frontend && npm install",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:start": "cd frontend && npm start",
+    "install:all": "npm run bot:install && npm run frontend:install",
+    "dev": "concurrently \"npm run bot:dev\" \"npm run frontend:dev\"",
+    "setup": "./quickstart.sh"
+  },
+  "keywords": [
+    "stellar",
+    "soroban",
+    "flash-loan",
+    "arbitrage",
+    "defi"
+  ],
+  "author": "Flash Loan Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

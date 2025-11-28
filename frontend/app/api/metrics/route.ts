@@ -1,0 +1,24 @@
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  try {
+    const BOT_API_URL = process.env.BOT_API_URL || 'http://localhost:3001';
+    
+    const response = await fetch(`${BOT_API_URL}/api/metrics`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch metrics');
+    }
+    
+    const metrics = await response.json();
+    return NextResponse.json(metrics);
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to fetch metrics' },
+      { status: 500 }
+    );
+  }
+}

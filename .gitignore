@@ -1,0 +1,45 @@
+# Flash Loan Arbitrage Bot
+
+# Logs
+logs/
+*.log
+
+# Dependencies
+node_modules/
+target/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
+build/
+*.wasm
+*.o
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temp files
+*.tmp
+temp/
+.cache/
+
+# Secrets
+*.pem
+*.key
+secrets.json
