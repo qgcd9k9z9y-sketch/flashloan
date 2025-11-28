@@ -17,6 +17,8 @@ export interface ArbitrageOpportunity {
   id: string;
   poolA: PoolPrice;
   poolB: PoolPrice;
+  tokenA: string; // First token symbol
+  tokenB: string; // Second token symbol
   tokenBorrow: string; // Token symbol to borrow
   tokenIntermediate: string; // Intermediate token
   borrowAmount: bigint;
@@ -30,10 +32,12 @@ export interface ArbitrageOpportunity {
 export class ArbitrageScanner {
   private opportunities: Map<string, ArbitrageOpportunity>;
   private isScanning: boolean;
+  private opportunityCounter: number;
 
   constructor() {
     this.opportunities = new Map();
     this.isScanning = false;
+    this.opportunityCounter = 0;
   }
 
   /**
@@ -90,14 +94,17 @@ export class ArbitrageScanner {
       const scanTime = Date.now() - scanStart;
       metrics.recordScan(scanTime);
 
-      if (opportunities.length > 0) {
+      // Get all active opportunities from Map
+      const allActiveOpportunities = this.getOpportunities();
+
+      if (allActiveOpportunities.length > 0) {
         logger.info('Arbitrage opportunities detected', {
-          count: opportunities.length,
+          count: allActiveOpportunities.length,
           scanTimeMs: scanTime,
         });
       }
 
-      return opportunities;
+      return allActiveOpportunities;
     } catch (error) {
       logger.error('Scan failed', { error });
       metrics.recordError(error as Error);
@@ -154,6 +161,8 @@ export class ArbitrageScanner {
   private detectOpportunities(poolPrices: PoolPrice[]): ArbitrageOpportunity[] {
     const opportunities: ArbitrageOpportunity[] = [];
 
+    logger.debug(`Detecting opportunities from ${poolPrices.length} pool prices`);
+
     // Group prices by token pair
     const pricesByPair = new Map<string, PoolPrice[]>();
 
@@ -164,6 +173,8 @@ export class ArbitrageScanner {
       }
       pricesByPair.get(pairKey)!.push(price);
     });
+
+    logger.debug(`Grouped into ${pricesByPair.size} token pairs:`, Array.from(pricesByPair.entries()).map(([pair, prices]) => `${pair}(${prices.length})`));
 
     // Find arbitrage between different DEXs for same pair
     pricesByPair.forEach((prices, pairKey) => {
@@ -243,6 +254,8 @@ export class ArbitrageScanner {
         id: this.generateOpportunityId(poolA, poolB),
         poolA,
         poolB,
+        tokenA: poolA.tokenA.symbol,
+        tokenB: poolA.tokenB.symbol,
         tokenBorrow: poolA.tokenA.symbol,
         tokenIntermediate: poolA.tokenB.symbol,
         borrowAmount,
@@ -321,7 +334,9 @@ export class ArbitrageScanner {
    * Generate unique opportunity ID
    */
   private generateOpportunityId(poolA: PoolPrice, poolB: PoolPrice): string {
-    return `${poolA.pool.poolAddress}_${poolB.pool.poolAddress}_${Date.now()}`;
+    // Use deterministic ID based on pool addresses only (no timestamp)
+    // This prevents duplicate opportunities for same pool pair
+    return `${poolA.pool.poolAddress}_${poolB.pool.poolAddress}`;
   }
 
   /**

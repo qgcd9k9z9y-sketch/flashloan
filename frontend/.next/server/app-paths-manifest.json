@@ -1,6 +1,7 @@
 {
-  "/api/bot/status/route": "app/api/bot/status/route.js",
-  "/api/metrics/route": "app/api/metrics/route.js",
   "/api/opportunities/route": "app/api/opportunities/route.js",
+  "/api/metrics/route": "app/api/metrics/route.js",
+  "/api/execute/route": "app/api/execute/route.js",
+  "/api/bot/status/route": "app/api/bot/status/route.js",
   "/page": "app/page.js"
 }

@@ -106,7 +106,14 @@ app.get('/api/opportunities', (req, res) => {
   const now = Date.now();
   const activeOpportunities = (botState.opportunities || []).filter((opp: any) => opp.expiresAt > now);
   
-  const serialized = serializeBigInt(activeOpportunities);
+  // Add dexName to poolA and poolB for easier frontend access
+  const enriched = activeOpportunities.map((opp: any) => ({
+    ...opp,
+    poolA: opp.poolA ? { ...opp.poolA, dexName: opp.poolA.pool?.dexName } : null,
+    poolB: opp.poolB ? { ...opp.poolB, dexName: opp.poolB.pool?.dexName } : null,
+  }));
+  
+  const serialized = serializeBigInt(enriched);
   res.json(serialized);
 });
 
