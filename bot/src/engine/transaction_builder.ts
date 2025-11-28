@@ -42,7 +42,7 @@ export class TransactionBuilder {
         opp.poolA.tokenA.address, // token_borrow
         opp.poolA.tokenB.address, // token_intermediate
         opp.borrowAmount.toString(), // amount
-        opp.poolA.pool.dex, // dex_a_type (0 = Soroswap, 1 = Phoenix)
+        opp.poolA.pool.dex, // dex_a_type (0 = Soroswap, 1 = Aquarius)
         opp.poolA.pool.poolAddress, // dex_a_pool
         opp.poolB.pool.dex, // dex_b_type
         opp.poolB.pool.poolAddress, // dex_b_pool

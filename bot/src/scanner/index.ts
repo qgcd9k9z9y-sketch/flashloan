@@ -7,7 +7,7 @@
 import { logger } from '../utils/logger';
 import { metrics } from '../utils/metrics';
 import { soroswapScanner, PoolPrice } from './soroswap';
-import { phoenixScanner } from './phoenix';
+import { aquariusScanner } from './aquarius';
 import { stellarDexScanner } from './stellar_dex';
 import { getToken } from '../config/tokens';
 import { findArbitragePairs, DexPool } from '../config/dex_pools';
@@ -141,11 +141,11 @@ export class ArbitrageScanner {
     const soroswapPools = poolsToFetch.filter(p => p.pool.dexName === 'Soroswap');
     const soroswapPrices = await soroswapScanner.fetchMultiplePools(soroswapPools);
 
-    // Fetch from Phoenix
-    const phoenixPools = poolsToFetch.filter(p => p.pool.dexName === 'Phoenix');
-    const phoenixPrices = await phoenixScanner.fetchMultiplePools(phoenixPools);
+    // Fetch from Aquarius
+    const aquariusPools = poolsToFetch.filter(p => p.pool.dexName === 'Aquarius');
+    const aquariusPrices = await aquariusScanner.fetchMultiplePools(aquariusPools);
 
-    return [...soroswapPrices, ...phoenixPrices];
+    return [...soroswapPrices, ...aquariusPrices];
   }
 
   /**
@@ -208,7 +208,8 @@ export class ArbitrageScanner {
       const borrowAmount = poolA.reserveA / BigInt(10);
 
       // Simulate: borrow tokenA, swap on poolA to get tokenB
-      const amountAfterSwap1 = soroswapScanner.simulateSwap(
+      const scannerA = poolA.pool.dexName === 'Soroswap' ? soroswapScanner : aquariusScanner;
+      const amountAfterSwap1 = scannerA.simulateSwap(
         poolA,
         poolA.tokenA,
         poolA.tokenB,
@@ -216,7 +217,8 @@ export class ArbitrageScanner {
       );
 
       // Swap tokenB back to tokenA on poolB
-      const amountAfterSwap2 = phoenixScanner.simulateSwap(
+      const scannerB = poolB.pool.dexName === 'Soroswap' ? soroswapScanner : aquariusScanner;
+      const amountAfterSwap2 = scannerB.simulateSwap(
         poolB,
         poolB.tokenB,
         poolB.tokenA,

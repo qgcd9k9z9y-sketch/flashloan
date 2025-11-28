@@ -127,18 +127,18 @@ impl DexInterface for SoroswapDex {
     }
 }
 
-/// Phoenix DEX adapter
-pub struct PhoenixDex;
+/// Aquarius DEX adapter
+pub struct AquariusDex;
 
-impl DexInterface for PhoenixDex {
+impl DexInterface for AquariusDex {
     fn get_price(
         env: &Env,
         pool_address: &Address,
         token_in: &Address,
         token_out: &Address,
     ) -> Result<i128, crate::errors::Error> {
-        // TODO: Implement Phoenix price fetching
-        // Phoenix may use a different AMM model (e.g., stable swap)
+        // TODO: Implement Aquarius price fetching
+        // Aquarius supports both constant product and stable swap AMMs
         Ok(0) // Placeholder
     }
     
@@ -150,7 +150,7 @@ impl DexInterface for PhoenixDex {
         amount_in: i128,
         min_amount_out: i128,
     ) -> Result<i128, crate::errors::Error> {
-        // TODO: Implement Phoenix swap execution
+        // TODO: Implement Aquarius swap execution
         Ok(0) // Placeholder
     }
     
@@ -160,7 +160,7 @@ impl DexInterface for PhoenixDex {
         token_a: &Address,
         token_b: &Address,
     ) -> Result<(i128, i128), crate::errors::Error> {
-        // TODO: Implement Phoenix reserve fetching
+        // TODO: Implement Aquarius reserve fetching
         Ok((0, 0)) // Placeholder
     }
     
@@ -171,8 +171,8 @@ impl DexInterface for PhoenixDex {
         token_out: &Address,
         amount_in: i128,
     ) -> Result<i128, crate::errors::Error> {
-        // TODO: Implement Phoenix output calculation
-        // Phoenix may use stable swap curve or other formulas
+        // TODO: Implement Aquarius output calculation
+        // Aquarius uses constant product (x*y=k) and stable swap formulas
         Ok(0) // Placeholder
     }
 }
@@ -189,7 +189,7 @@ pub fn execute_dex_swap(
 ) -> Result<i128, crate::errors::Error> {
     match dex_type {
         DexType::Soroswap => SoroswapDex::swap(env, pool_address, token_in, token_out, amount_in, min_amount_out),
-        DexType::Phoenix => PhoenixDex::swap(env, pool_address, token_in, token_out, amount_in, min_amount_out),
+        DexType::Aquarius => AquariusDex::swap(env, pool_address, token_in, token_out, amount_in, min_amount_out),
     }
 }
 
@@ -197,5 +197,5 @@ pub fn execute_dex_swap(
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum DexType {
     Soroswap,
-    Phoenix,
+    Aquarius,
 }

@@ -8,7 +8,7 @@ import { logger } from '../utils/logger';
 import { ArbitrageOpportunity } from '../scanner';
 import { PoolPrice } from '../scanner/soroswap';
 import { soroswapScanner } from '../scanner/soroswap';
-import { phoenixScanner } from '../scanner/phoenix';
+import { aquariusScanner } from '../scanner/aquarius';
 
 export interface OptimizedRoute {
   originalOpportunity: ArbitrageOpportunity;
@@ -129,8 +129,8 @@ export class RouteOptimizer {
   ): bigint {
     if (dexName === 'Soroswap') {
       return soroswapScanner.simulateSwap(pool, tokenIn, tokenOut, amountIn);
-    } else if (dexName === 'Phoenix') {
-      return phoenixScanner.simulateSwap(pool, tokenIn, tokenOut, amountIn);
+    } else if (dexName === 'Aquarius') {
+      return aquariusScanner.simulateSwap(pool, tokenIn, tokenOut, amountIn);
     }
 
     throw new Error(`Unknown DEX: ${dexName}`);

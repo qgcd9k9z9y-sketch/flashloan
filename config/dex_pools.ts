@@ -6,7 +6,7 @@
 
 export enum DexType {
   Soroswap = 0,
-  Phoenix = 1,
+  Aquarius = 1,
 }
 
 export interface DexPool {
@@ -62,42 +62,43 @@ export const SOROSWAP_POOLS: DexPool[] = [
 ];
 
 /**
- * Phoenix Pools
+ * Aquarius Pools (Testnet - Real Addresses)
+ * Source: https://amm-api-testnet.aqua.network/api/external/v1/pools/
  */
-export const PHOENIX_POOLS: DexPool[] = [
+export const AQUARIUS_POOLS: DexPool[] = [
   {
-    dex: DexType.Phoenix,
-    dexName: 'Phoenix',
-    poolAddress: 'CPHOENIX1XLMUSDCPOOLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    dex: DexType.Aquarius,
+    dexName: 'Aquarius',
+    poolAddress: 'CD3LFMMLBQ6RBJUD3Z2LFDFE6544WDRMWHEZYPI5YDVESYRSO2TT32BX', // XLM/USDC constant_product
     tokenA: 'XLM',
     tokenB: 'USDC',
-    feeRate: 25, // 0.25%
+    feeRate: 30, // 0.30%
     enabled: true,
   },
   {
-    dex: DexType.Phoenix,
-    dexName: 'Phoenix',
-    poolAddress: 'CPHOENIX2XLMAQUAPOOLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    dex: DexType.Aquarius,
+    dexName: 'Aquarius',
+    poolAddress: 'CCSXYUVLYALKJGIIYMGYLZI447VS6TDWFTVDL43B4IKK2WERHLWUVCRC', // XLM/AQUA constant_product
     tokenA: 'XLM',
     tokenB: 'AQUA',
-    feeRate: 25,
+    feeRate: 30,
     enabled: true,
   },
   {
-    dex: DexType.Phoenix,
-    dexName: 'Phoenix',
-    poolAddress: 'CPHOENIX3USDCAQUAPOOLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    dex: DexType.Aquarius,
+    dexName: 'Aquarius',
+    poolAddress: 'CC2NBF7M6QBEOUNTV2C4BK42ID2WK2O3AJRC777BND4O3B6JUV7EY33J', // USDC/USDT stableswap
     tokenA: 'USDC',
-    tokenB: 'AQUA',
-    feeRate: 25,
+    tokenB: 'USDT',
+    feeRate: 10, // 0.10% (stable pool)
     enabled: true,
   },
   {
-    dex: DexType.Phoenix,
-    dexName: 'Phoenix',
-    poolAddress: 'CPHOENIX4XLMBTCPOOLXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-    tokenA: 'XLM',
-    tokenB: 'BTC',
+    dex: DexType.Aquarius,
+    dexName: 'Aquarius',
+    poolAddress: 'CCPRHABYS45EJUFUW6BQ26JCP7KDX76XMHASKC2IHSNIHQGWISTQXUM5', // USDT/AQUA constant_product
+    tokenA: 'USDT',
+    tokenB: 'AQUA',
     feeRate: 30,
     enabled: true,
   },
@@ -108,7 +109,7 @@ export const PHOENIX_POOLS: DexPool[] = [
  */
 export const ALL_POOLS: DexPool[] = [
   ...SOROSWAP_POOLS,
-  ...PHOENIX_POOLS,
+  ...AQUARIUS_POOLS,
 ];
 
 /**

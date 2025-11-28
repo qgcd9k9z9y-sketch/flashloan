@@ -1,7 +1,7 @@
 /**
- * Phoenix DEX Scanner
+ * Aquarius DEX Scanner
  * 
- * Fetches prices and liquidity from Phoenix pools
+ * Fetches prices and liquidity from Aquarius AMM pools
  */
 
 import { logger } from '../utils/logger';
@@ -9,27 +9,25 @@ import { DexPool } from '../config/dex_pools';
 import { Token } from '../config/tokens';
 import { PoolPrice } from './soroswap';
 
-export class PhoenixScanner {
+export class AquariusScanner {
   /**
-   * Fetch price for a specific Phoenix pool
+   * Fetch price for a specific Aquarius pool
    */
   async fetchPoolPrice(pool: DexPool, tokenA: Token, tokenB: Token): Promise<PoolPrice | null> {
     try {
-      logger.debug('Fetching Phoenix pool price', {
+      logger.debug('Fetching Aquarius pool price', {
         pool: pool.poolAddress,
         pair: `${tokenA.symbol}/${tokenB.symbol}`,
       });
 
-      // TODO: Implement actual Phoenix pool contract calls
-      // Phoenix may use different AMM formulas (e.g., stable swap for stablecoins)
+      // TODO: Implement actual Aquarius pool contract calls
+      // Aquarius uses constant product (x*y=k) and stableswap AMM formulas
       // 
       // PSEUDOCODE:
       // const contract = new Contract(pool.poolAddress);
-      // const poolInfo = await contract.call('query_pool_info');
-      // const priceInfo = await contract.call('simulate_swap', {
-      //   offer_asset: tokenA.address,
-      //   amount: 1e7,
-      // });
+      // const reserves = await contract.call('get_reserves');
+      // const poolInfo = await contract.call('get_pool_info');
+      // Similar to Soroswap implementation
 
       // MOCK DATA for development - with variation based on pool and token
       const poolHash = pool.poolAddress.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -54,7 +52,7 @@ export class PhoenixScanner {
         timestamp: Date.now(),
       };
     } catch (error) {
-      logger.error('Failed to fetch Phoenix pool price', {
+      logger.error('Failed to fetch Aquarius pool price', {
         pool: pool.poolAddress,
         error,
       });
@@ -81,7 +79,7 @@ export class PhoenixScanner {
   }
 
   /**
-   * Calculate output for Phoenix (may use different formula than Soroswap)
+   * Calculate output for Aquarius (constant product formula)
    */
   calculateSwapOutput(
     amountIn: bigint,
@@ -89,7 +87,7 @@ export class PhoenixScanner {
     reserveOut: bigint,
     feeRateBps: number
   ): bigint {
-    // Phoenix uses similar constant product but may have different fee structure
+    // Aquarius uses constant product formula (x*y=k) with configurable fees
     const feeMultiplier = BigInt(10000 - feeRateBps);
     const amountInWithFee = (amountIn * feeMultiplier) / BigInt(10000);
 
@@ -121,5 +119,5 @@ export class PhoenixScanner {
   }
 }
 
-export const phoenixScanner = new PhoenixScanner();
-export default phoenixScanner;
+export const aquariusScanner = new AquariusScanner();
+export default aquariusScanner;

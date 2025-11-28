@@ -62,7 +62,7 @@ app.get('/api/status', (req, res) => {
     lastScanTime: botState.lastScanTime?.toISOString() || 'Never',
     uptime: `${hours}h ${minutes}m`,
     network: 'Testnet',
-    connectedDexes: ['Soroswap', 'Phoenix', 'Stellar DEX'],
+    connectedDexes: ['Soroswap', 'Aquarius', 'Stellar DEX'],
     lastError: null,
   });
   

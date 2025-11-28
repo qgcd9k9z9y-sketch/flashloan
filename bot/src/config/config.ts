@@ -37,8 +37,8 @@ export const config = {
     // Soroswap Router
     soroswapRouter: process.env.SOROSWAP_ROUTER || 'CXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
     
-    // Phoenix Router
-    phoenixRouter: process.env.PHOENIX_ROUTER || 'CXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    // Aquarius AMM Router (Testnet)
+    aquariusRouter: process.env.AQUARIUS_ROUTER || 'CDGX6Q3ZZIDSX2N3SHBORWUIEG2ZZEBAAMYARAXTT7M5L6IXKNJMT3GB',
   },
 
   // Bot Wallet
