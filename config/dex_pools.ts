@@ -8,6 +8,9 @@ export enum DexType {
   Soroswap = 0,
   Aquarius = 1,
   Base = 2, // Base chain DEXs (Aerodrome, BaseSwap)
+  Solana = 3, // Solana DEXs (Raydium, Orca, Jupiter)
+  Sui = 4, // Sui DEXs (Cetus, Turbos)
+  Aptos = 5, // Aptos DEXs (PancakeSwap, Liquidswap)
 }
 
 export interface DexPool {
@@ -107,12 +110,31 @@ export const AQUARIUS_POOLS: DexPool[] = [
   },
 ];
 
+// Import other chain pools
+import { AERODROME_POOLS, BASESWAP_POOLS } from './base_config';
+import { RAYDIUM_POOLS, ORCA_POOLS } from './solana_config';
+import { CETUS_POOLS, TURBOS_POOLS } from './sui_config';
+import { PANCAKESWAP_POOLS, LIQUIDSWAP_POOLS } from './aptos_config';
+
 /**
- * All pools combined
+ * All pools combined - Multi-chain
  */
 export const ALL_POOLS: DexPool[] = [
+  // Stellar/Soroban DEXs
   ...SOROSWAP_POOLS,
   ...AQUARIUS_POOLS,
+  // Base DEXs
+  ...AERODROME_POOLS,
+  ...BASESWAP_POOLS,
+  // Solana DEXs
+  ...RAYDIUM_POOLS,
+  ...ORCA_POOLS,
+  // Sui DEXs
+  ...CETUS_POOLS,
+  ...TURBOS_POOLS,
+  // Aptos DEXs
+  ...PANCAKESWAP_POOLS,
+  ...LIQUIDSWAP_POOLS,
 ];
 
 /**

@@ -25,9 +25,13 @@
   "author": "Flash Loan Team",
   "license": "MIT",
   "dependencies": {
+    "@mysten/sui": "^1.45.0",
+    "@solana/spl-token": "^0.4.14",
+    "@solana/web3.js": "^1.98.4",
     "@stellar/stellar-sdk": "^11.2.2",
     "@uniswap/sdk-core": "^7.9.0",
     "@uniswap/v2-sdk": "^4.16.0",
+    "aptos": "^1.22.1",
     "axios": "^1.6.2",
     "bignumber.js": "^9.1.2",
     "cors": "^2.8.5",

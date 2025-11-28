@@ -10,13 +10,19 @@ import { soroswapScanner, PoolPrice } from './soroswap';
 import { aquariusScanner } from './aquarius';
 import { stellarDexScanner } from './stellar_dex';
 import { baseScanner } from './base';
+import { solanaScanner } from './solana';
+import { suiScanner } from './sui';
+import { aptosScanner } from './aptos';
 import { getToken } from '../config/tokens';
 import { findArbitragePairs, DexPool } from '../config/dex_pools';
 import config from '../config/config';
 
-logger.info('Multi-chain scanner initialized', {
+logger.info('🌐 Multi-chain scanner initialized', {
   stellar: true,
   base: config.base?.enabled || false,
+  solana: config.solana?.enabled || false,
+  sui: config.sui?.enabled || false,
+  aptos: config.aptos?.enabled || false,
 });
 
 export interface ArbitrageOpportunity {
@@ -150,15 +156,65 @@ export class ArbitrageScanner {
       });
     });
 
-    // Fetch from Soroswap
+    // Fetch from all DEXs in parallel
+    const promises: Promise<PoolPrice[]>[] = [];
+
+    // Stellar DEXs
     const soroswapPools = poolsToFetch.filter(p => p.pool.dexName === 'Soroswap');
-    const soroswapPrices = await soroswapScanner.fetchMultiplePools(soroswapPools);
+    if (soroswapPools.length > 0) {
+      promises.push(soroswapScanner.fetchMultiplePools(soroswapPools));
+    }
 
-    // Fetch from Aquarius
     const aquariusPools = poolsToFetch.filter(p => p.pool.dexName === 'Aquarius');
-    const aquariusPrices = await aquariusScanner.fetchMultiplePools(aquariusPools);
+    if (aquariusPools.length > 0) {
+      promises.push(aquariusScanner.fetchMultiplePools(aquariusPools));
+    }
 
-    return [...soroswapPrices, ...aquariusPrices];
+    // Base DEXs
+    if (config.base?.enabled) {
+      const basePools = poolsToFetch.filter(p => 
+        p.pool.dexName === 'Aerodrome' || p.pool.dexName === 'BaseSwap'
+      );
+      if (basePools.length > 0) {
+        promises.push(baseScanner.fetchMultiplePools(basePools));
+      }
+    }
+
+    // Solana DEXs
+    if (config.solana?.enabled) {
+      const solanaPools = poolsToFetch.filter(p => 
+        p.pool.dexName === 'Raydium' || p.pool.dexName === 'Orca'
+      );
+      if (solanaPools.length > 0) {
+        promises.push(solanaScanner.fetchMultiplePools(solanaPools));
+      }
+    }
+
+    // Sui DEXs
+    if (config.sui?.enabled) {
+      const suiPools = poolsToFetch.filter(p => 
+        p.pool.dexName === 'Cetus' || p.pool.dexName === 'Turbos'
+      );
+      if (suiPools.length > 0) {
+        promises.push(suiScanner.fetchMultiplePools(suiPools));
+      }
+    }
+
+    // Aptos DEXs
+    if (config.aptos?.enabled) {
+      const aptosPools = poolsToFetch.filter(p => 
+        p.pool.dexName === 'PancakeSwap' || p.pool.dexName === 'Liquidswap'
+      );
+      if (aptosPools.length > 0) {
+        promises.push(aptosScanner.fetchMultiplePools(aptosPools));
+      }
+    }
+
+    // Fetch all in parallel
+    const results = await Promise.all(promises);
+    
+    // Flatten all results
+    return results.flat();
   }
 
   /**

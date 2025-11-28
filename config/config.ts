@@ -26,14 +26,27 @@ export const config = {
 
   // Base Chain Configuration
   base: {
-    // Base RPC endpoint
     rpcUrl: process.env.BASE_RPC_URL || 'https://mainnet.base.org',
-    
-    // Chain ID
     chainId: parseInt(process.env.BASE_CHAIN_ID || '8453'),
-    
-    // Enable Base scanning
     enabled: process.env.BASE_ENABLED !== 'false',
+  },
+
+  // Solana Configuration
+  solana: {
+    rpcUrl: process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com',
+    enabled: process.env.SOLANA_ENABLED !== 'false',
+  },
+
+  // Sui Configuration
+  sui: {
+    rpcUrl: process.env.SUI_RPC_URL || 'https://fullnode.mainnet.sui.io:443',
+    enabled: process.env.SUI_ENABLED !== 'false',
+  },
+
+  // Aptos Configuration
+  aptos: {
+    rpcUrl: process.env.APTOS_RPC_URL || 'https://fullnode.mainnet.aptoslabs.com/v1',
+    enabled: process.env.APTOS_ENABLED !== 'false',
   },
 
   // Contract Addresses
